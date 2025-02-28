@@ -1,5 +1,7 @@
 const {
-  convertTimestampToDate
+  convertTimestampToDate,
+  mapDataForInsertion,
+  createLookupObject,
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -38,3 +40,128 @@ describe("convertTimestampToDate", () => {
   });
 });
 
+describe("mapDataForInsertion", () => {
+  test("returns an empty array when an empty array is passed in", () => {
+    expect(mapDataForInsertion([])).toEqual([]);
+  });
+  test("when passed in an array with a single nested object and a single key as a string, returns a nested array with the value at that key from the object", () => {
+    const inputArr = [
+      {
+        description: "Code is love, code is life",
+        slug: "coding",
+        img_url: "",
+      },
+    ];
+    expect(mapDataForInsertion(inputArr, "slug")).toEqual([["coding"]]);
+  });
+  test("when passed in an array with a single nested object and several keys as strings, returns a nested array with the values at those keys from the object", () => {
+    const inputArr = [
+      {
+        description: "Code is love, code is life",
+        slug: "coding",
+        img_url: "",
+      },
+    ];
+    expect(mapDataForInsertion(inputArr, "description", "slug")).toEqual([
+      ["Code is love, code is life", "coding"],
+    ]);
+  });
+  test("when passed in an array with a several nested objects and several keys as strings, returns an array with arrays of the values at those keys from the objects as ", () => {
+    const inputArr = [
+      {
+        description: "Code is love, code is life",
+        slug: "coding",
+        img_url: "",
+      },
+      {
+        description: "FOOTIE!",
+        slug: "football",
+        img_url:
+          "https://images.pexels.com/photos/209841/pexels-photo-209841.jpeg?w=700&h=700",
+      },
+    ];
+    expect(mapDataForInsertion(inputArr, "description", "slug")).toEqual([
+      ["Code is love, code is life", "coding"],
+      ["FOOTIE!", "football"],
+    ]);
+  });
+  test("does not mutate the input array", () => {
+    const inputArr = [
+      {
+        description: "Code is love, code is life",
+        slug: "coding",
+        img_url: "",
+      },
+    ];
+    const inputArrAfter = [
+      {
+        description: "Code is love, code is life",
+        slug: "coding",
+        img_url: "",
+      },
+    ];
+    mapDataForInsertion(inputArr);
+    expect(inputArr).toEqual(inputArrAfter);
+  });
+  test("returns a new array", () => {
+    const inputArr = [
+      {
+        description: "Code is love, code is life",
+        slug: "coding",
+        img_url: "",
+      },
+    ];
+    const result = mapDataForInsertion(inputArr);
+    expect(result).not.toBe(inputArr);
+  });
+});
+
+describe("createLookupObject", () => {
+  test("if given an empty array, returns an empty object", () => {
+    expect(createLookupObject([])).toEqual({});
+  });
+  test("when given an array with a single nested object, converts it into an object where the key is the value of the first passed in key string and the value is the value of the second passed in key string", () => {
+    const inputArr = [
+      {
+        article_id: 12,
+        title: "Moustache",
+      },
+    ];
+    const expectedResult = { Moustache: 12 };
+    expect(createLookupObject(inputArr, "title", "article_id")).toEqual(
+      expectedResult
+    );
+  });
+  test("when given an array with several nested objects, converts it into an object where the keys are the values at the first passed in key string and the values are the values at the second passed in key string", () => {
+    const inputArr = [
+      {
+        article_id: 12,
+        title: "Moustache",
+      },
+      {
+        article_id: 11,
+        title: "Am I a cat?",
+      },
+    ];
+    const expectedResult = { Moustache: 12, "Am I a cat?": 11 };
+    expect(createLookupObject(inputArr, "title", "article_id")).toEqual(
+      expectedResult
+    );
+  });
+  test("does not mutate the input array", () => {
+    const inputArr = [
+      {
+        article_id: 12,
+        title: "Moustache",
+      },
+    ];
+    const inputArrAfter = [
+      {
+        article_id: 12,
+        title: "Moustache",
+      },
+    ];
+    createLookupObject(inputArr, "title", "article_id");
+    expect(inputArr).toEqual(inputArrAfter);
+  });
+});
