@@ -5,5 +5,18 @@ exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
   return { created_at: new Date(created_at), ...otherProperties };
 };
 
+exports.mapDataForInsertion = (array, ...keys) => {
+  return array.map((item) => {
+    return keys.map((key) => {
+      return item[key];
+    });
+  });
+};
 
-
+exports.createLookupObject = (dataArr, keyToGetKey, keyToGetValue) => {
+  const lookupObject = {};
+  dataArr.forEach((item) => {
+    lookupObject[item[keyToGetKey]] = item[keyToGetValue];
+  });
+  return lookupObject;
+};
