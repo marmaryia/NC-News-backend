@@ -1,6 +1,10 @@
 const db = require("../connection");
 const format = require("pg-format");
-const { mapDataForInsertion, createLookupObject } = require("./utils");
+const {
+  mapDataForInsertion,
+  createLookupObject,
+  convertTimestampToDate,
+} = require("./utils");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
   return db
@@ -38,7 +42,10 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
     .then(() => {
       return insertArticles(articleData);
     })
-    .then(({ rows }) => insertComments(commentData, rows));
+    .then(({ rows }) => {
+      console.log(rows);
+      insertComments(commentData, rows);
+    });
 };
 
 function createTopics() {
@@ -111,17 +118,21 @@ function insertUsers(userData) {
 }
 
 function insertArticles(articleData) {
-  const formattedArticles = articleData.map((article) => {
-    return [
-      article.title,
-      article.topic,
-      article.author,
-      article.body,
-      new Date(article.created_at),
-      article.votes,
-      article.article_img_url,
-    ];
-  });
+  const convertedArticles = articleData.map((article) =>
+    convertTimestampToDate(article)
+  );
+
+  const formattedArticles = mapDataForInsertion(
+    convertedArticles,
+    "title",
+    "topic",
+    "author",
+    "body",
+    "created_at",
+    "votes",
+    "article_img_url"
+  );
+
   const insertString = format(
     `INSERT INTO articles(
     title,
@@ -138,7 +149,7 @@ function insertArticles(articleData) {
 
 function insertComments(commentData, articleRows) {
   const articleLookup = createLookupObject(articleRows, "title", "article_id");
-
+  // TODO: write function to convert data for mapping
   const formattedComments = commentData.map((comment) => {
     return [
       articleLookup[comment.article_title],
