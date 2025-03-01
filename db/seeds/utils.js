@@ -6,11 +6,7 @@ exports.convertTimestampToDate = ({ created_at, ...otherProperties }) => {
 };
 
 exports.mapDataForInsertion = (array, ...keys) => {
-  return array.map((item) => {
-    return keys.map((key) => {
-      return item[key];
-    });
-  });
+  return array.map((item) => keys.map((key) => item[key]));
 };
 
 exports.createLookupObject = (dataArr, keyToGetKey, keyToGetValue) => {
@@ -19,4 +15,10 @@ exports.createLookupObject = (dataArr, keyToGetKey, keyToGetValue) => {
     lookupObject[item[keyToGetKey]] = item[keyToGetValue];
   });
   return lookupObject;
+};
+
+exports.addIdProperty = (dataArr, lookupObj, idKey, propertyKey) => {
+  return dataArr.map((item) => {
+    return { ...item, [idKey]: lookupObj[item[propertyKey]] };
+  });
 };
