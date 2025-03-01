@@ -2,6 +2,7 @@ const {
   convertTimestampToDate,
   mapDataForInsertion,
   createLookupObject,
+  addIdProperty,
 } = require("../db/seeds/utils");
 
 describe("convertTimestampToDate", () => {
@@ -165,5 +166,72 @@ describe("createLookupObject", () => {
     ];
     createLookupObject(inputArr, "title", "article_id");
     expect(inputArr).toEqual(inputArrAfter);
+  });
+});
+
+describe("addIdProperty", () => {
+  test("adds ID property from the provided lookup object when passed in an array with a single object", () => {
+    const inputArr = [
+      {
+        slug: "coding",
+        description: "Code is love, code is life",
+      },
+    ];
+    const lookup = { coding: 1 };
+    const expectedResult = [
+      { slug: "coding", description: "Code is love, code is life", id: 1 },
+    ];
+    const result = addIdProperty(inputArr, lookup, "id", "slug");
+    expect(result).toEqual(expectedResult);
+  });
+  test("adds ID properties from the provided lookup object to all objects in the passed in array", () => {
+    const inputArr = [
+      {
+        slug: "coding",
+        description: "Code is love, code is life",
+      },
+      {
+        slug: "fun",
+        description: "Whatever",
+      },
+    ];
+    const lookup = { fun: 1, coding: 2 };
+    const expectedResult = [
+      { slug: "coding", description: "Code is love, code is life", id: 2 },
+      { slug: "fun", description: "Whatever", id: 1 },
+    ];
+    const result = addIdProperty(inputArr, lookup, "id", "slug");
+    expect(result).toEqual(expectedResult);
+  });
+  test("does not mutate input data", () => {
+    const inputArr = [
+      {
+        slug: "coding",
+        description: "Code is love, code is life",
+      },
+    ];
+    const inputArrAfter = [
+      {
+        slug: "coding",
+        description: "Code is love, code is life",
+      },
+    ];
+    const lookup = { coding: 1 };
+    const lookupAfter = { coding: 1 };
+
+    addIdProperty(inputArr, lookup, "id", "slug");
+    expect(inputArr).toEqual(inputArrAfter);
+    expect(lookup).toEqual(lookupAfter);
+  });
+  test("returns a new array", () => {
+    const inputArr = [
+      {
+        slug: "coding",
+        description: "Code is love, code is life",
+      },
+    ];
+    const lookup = { coding: 1 };
+    const result = addIdProperty(inputArr, lookup, "id", "slug");
+    expect(result).not.toBe(inputArr);
   });
 });
