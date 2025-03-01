@@ -4,6 +4,7 @@ const {
   mapDataForInsertion,
   createLookupObject,
   convertTimestampToDate,
+  addIdProperty,
 } = require("./utils");
 
 const seed = ({ topicData, userData, articleData, commentData }) => {
@@ -43,7 +44,6 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return insertArticles(articleData);
     })
     .then(({ rows }) => {
-      console.log(rows);
       insertComments(commentData, rows);
     });
 };
@@ -149,16 +149,24 @@ function insertArticles(articleData) {
 
 function insertComments(commentData, articleRows) {
   const articleLookup = createLookupObject(articleRows, "title", "article_id");
-  // TODO: write function to convert data for mapping
-  const formattedComments = commentData.map((comment) => {
-    return [
-      articleLookup[comment.article_title],
-      comment.body,
-      comment.votes,
-      comment.author,
-      new Date(comment.created_at),
-    ];
-  });
+  const commentsWithConvertedTimestamp = commentData.map((comment) =>
+    convertTimestampToDate(comment)
+  );
+  const commentsWithId = addIdProperty(
+    commentsWithConvertedTimestamp,
+    articleLookup,
+    "article_id",
+    "article_title"
+  );
+  const formattedComments = mapDataForInsertion(
+    commentsWithId,
+    "article_id",
+    "body",
+    "votes",
+    "author",
+    "created_at"
+  );
+
   const insertString = format(
     `INSERT INTO comments (
     article_id,
