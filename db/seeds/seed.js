@@ -20,9 +20,6 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return db.query("DROP TABLE IF EXISTS topics");
     })
     .then(() => {
-      return db.query("DROP TABLE IF EXISTS articles");
-    })
-    .then(() => {
       return createTopics();
     })
     .then(() => {
@@ -44,7 +41,7 @@ const seed = ({ topicData, userData, articleData, commentData }) => {
       return insertArticles(articleData);
     })
     .then(({ rows }) => {
-      insertComments(commentData, rows);
+      return insertComments(commentData, rows);
     });
 };
 
