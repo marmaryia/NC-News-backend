@@ -58,7 +58,7 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "serves a objects that represents the comment added to the the article with the requested ID",
+    "description": "accepts an object with the required properties of 'body' and 'username', where username refers to an existing user, and serves an objects that represents the comment added to the the article with the requested ID",
     "queries": [],
     "exampleResponse": {
       "comment": {
