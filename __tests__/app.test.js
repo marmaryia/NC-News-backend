@@ -140,13 +140,66 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an array of all comments for the article with the provided ID", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(11);
+        comments.forEach((comment) => {
+          const { comment_id, votes, created_at, author, body, article_id } =
+            comment;
+          expect(article_id).toBe(1);
+          expect(typeof comment_id).toBe("number");
+          expect(typeof votes).toBe("number");
+          expect(typeof created_at).toBe("string");
+          expect(typeof author).toBe("string");
+          expect(typeof body).toBe("string");
+        });
+      });
+  });
+  test("200: The comments are sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeSorted({ key: "created_at", descending: true });
+      });
+  });
+  test("200: Responds with an empty array when the article with the provided ID does exist in the database but has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
+      });
+  });
+  test("404: Responds with 'Not Found' if the article with the provided ID does not exist in the database", () => {
+    return request(app)
+      .get("/api/articles/500/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("The item requested does not exist in the database");
+      });
+  });
+  test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
+    return request(app)
+      .get("/api/articles/notAnId/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: the identifier is not valid");
+      });
+  });
+});
+
 describe("GET /aqi", () => {
   test("404: Responds with a message about the endpoint not existing", () => {
     return request(app)
       .get("/aqi")
       .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("This endpoint does not exist.");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("This endpoint does not exist.");
       });
   });
 });
