@@ -193,6 +193,61 @@ describe("GET /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("POST /api/articles/:article_id/comments", () => {
+  test("201: Responds with an object representing the added comment", () => {
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send({ username: "lurker", body: "Fantastic!" })
+      .expect(201)
+      .then(({ body: { comment } }) => {
+        const { comment_id, article_id, body, votes, author, created_at } =
+          comment;
+        expect(comment_id).toBe(19);
+        expect(article_id).toBe(2);
+        expect(body).toBe("Fantastic!");
+        expect(votes).toBe(0);
+        expect(author).toBe("lurker");
+        expect(typeof created_at).toBe("string");
+      });
+  });
+  test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
+    return request(app)
+      .post("/api/articles/notAnId/comments")
+      .send({ username: "lurker", body: "Fantastic!" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: the identifier is not valid");
+      });
+  });
+  test("404: Responds with 'Not Found' if the article with the provided ID does not exist in the database", () => {
+    return request(app)
+      .post("/api/articles/500/comments")
+      .send({ username: "lurker", body: "Fantastic!" })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Nothing found with this identifier.");
+      });
+  });
+  test("400: Responds with 'Bad Request' if the comment body to add to the article is incomplete", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ body: "Fantastic!" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: Incomplete data provided");
+      });
+  });
+  test("404: Responds with 'Not Found' if the foreign key in the comment body does not exist in the database", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: 5, body: "Fantastic!" })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Nothing found with this identifier.");
+      });
+  });
+});
+
 describe("GET /aqi", () => {
   test("404: Responds with a message about the endpoint not existing", () => {
     return request(app)

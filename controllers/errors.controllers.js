@@ -15,10 +15,14 @@ exports.handleCustomErrors = (err, request, response, next) => {
 };
 
 exports.handleDatabaseErrors = (err, request, response, next) => {
-  if ((err.code = "22P02")) {
+  if (err.code === "22P02") {
     response
       .status(400)
       .send({ msg: "Bad request: the identifier is not valid" });
+  } else if (err.code === "23503") {
+    response.status(404).send({
+      msg: "Nothing found with this identifier.",
+    });
   } else {
     next(err);
   }
