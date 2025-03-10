@@ -5,3 +5,19 @@ exports.handleNonexistentPath = (request, response) => {
 exports.handleServerErrors = (err, request, response, next) => {
   response.status(500).send({ msg: "Something went wrong :(" });
 };
+
+exports.handleCustomErrors = (err, request, response, next) => {
+  if (err.status) {
+    response.status(err.status).send({ msg: err.msg });
+  }
+  next(err);
+};
+
+exports.handleDatabaseErrors = (err, request, response, next) => {
+  if ((err.code = "22P02")) {
+    response
+      .status(400)
+      .send({ msg: "Bad request: the identifier is not valid" });
+  }
+  next(err);
+};
