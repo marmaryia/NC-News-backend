@@ -13,8 +13,11 @@ const {
 } = require("./controllers/articles.controllers");
 const {
   getCommentsByArticleId,
+  postCommentById,
 } = require("./controllers/comments.controllers");
 const app = express();
+
+app.use(express.json());
 
 app.get("/api", getAvailableEndpoints);
 
@@ -25,6 +28,8 @@ app.get("/api/articles", getAllArticles);
 app.get("/api/articles/:article_id", getArticleById);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
+
+app.post("/api/articles/:article_id/comments", postCommentById);
 
 app.all("/*", handleNonexistentPath);
 
