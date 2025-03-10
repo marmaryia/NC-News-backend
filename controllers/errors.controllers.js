@@ -12,3 +12,12 @@ exports.handleCustomErrors = (err, request, response, next) => {
   }
   next(err);
 };
+
+exports.handleDatabaseErrors = (err, request, response, next) => {
+  if ((err.code = "22P02")) {
+    response
+      .status(400)
+      .send({ msg: "Bad request: the identifier is not valid" });
+  }
+  next(err);
+};

@@ -73,6 +73,14 @@ describe("GET /api/articles/:article_id", () => {
         expect(msg).toBe("The item requested does not exist in the database");
       });
   });
+  test("400: Responds with 'Bad Request' if the requested ID is not valid", () => {
+    return request(app)
+      .get("/api/articles/notAnId")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: the identifier is not valid");
+      });
+  });
 });
 
 describe("GET /aqi", () => {
