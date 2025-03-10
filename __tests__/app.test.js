@@ -65,6 +65,14 @@ describe("GET /api/articles/:article_id", () => {
         expect(typeof article_img_url).toBe("string");
       });
   });
+  test("404: Responds with 'Not Found' if an article with the requested ID does not exist in the database", () => {
+    return request(app)
+      .get("/api/articles/100")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("The item requested does not exist in the database");
+      });
+  });
 });
 
 describe("GET /aqi", () => {
