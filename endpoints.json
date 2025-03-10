@@ -56,5 +56,19 @@
         }
       ]
     }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "serves a objects that represents the comment added to the the article with the requested ID",
+    "queries": [],
+    "exampleResponse": {
+      "comment": {
+        "article_id": 1,
+        "comment_id": 20,
+        "author": "weegembump",
+        "body": "Text from the comment...",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "votes": 0
+      }
+    }
   }
 }
