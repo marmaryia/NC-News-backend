@@ -73,7 +73,7 @@ describe("GET /api/articles", () => {
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles[0].article_id).toBe(3);
+        expect(articles).toBeSorted({ key: "created_at", descending: true });
       });
   });
   test("200: The comment_count property represents the number of comments for the article", () => {
