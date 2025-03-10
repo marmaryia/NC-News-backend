@@ -9,8 +9,9 @@ exports.handleServerErrors = (err, request, response, next) => {
 exports.handleCustomErrors = (err, request, response, next) => {
   if (err.status) {
     response.status(err.status).send({ msg: err.msg });
+  } else {
+    next(err);
   }
-  next(err);
 };
 
 exports.handleDatabaseErrors = (err, request, response, next) => {
@@ -18,6 +19,7 @@ exports.handleDatabaseErrors = (err, request, response, next) => {
     response
       .status(400)
       .send({ msg: "Bad request: the identifier is not valid" });
+  } else {
+    next(err);
   }
-  next(err);
 };
