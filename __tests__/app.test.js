@@ -140,6 +140,35 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
+describe("PATCH /api/articles/:article_id", () => {
+  test("202: Responds with an object representing the updated article", () => {
+    return request(app)
+      .patch("/api/articles/2")
+      .send({ inc_votes: -1 })
+      .expect(202)
+      .then(({ body: { article } }) => {
+        const {
+          article_id,
+          title,
+          topic,
+          author,
+          body,
+          created_at,
+          votes,
+          article_img_url,
+        } = article;
+        expect(votes).toBe(-1);
+        expect(article_id).toBe(2);
+        expect(typeof title).toBe("string");
+        expect(typeof topic).toBe("string");
+        expect(typeof author).toBe("string");
+        expect(typeof body).toBe("string");
+        expect(typeof created_at).toBe("string");
+        expect(typeof article_img_url).toBe("string");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id/comments", () => {
   test("200: Responds with an array of all comments for the article with the provided ID", () => {
     return request(app)
