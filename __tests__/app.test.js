@@ -167,6 +167,30 @@ describe("GET /api/articles/:article_id/comments", () => {
         expect(comments).toBeSorted({ key: "created_at", descending: true });
       });
   });
+  test("200: Responds with an empty array when the article with the provided ID does exist in the database but has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toEqual([]);
+      });
+  });
+  test("404: Responds with 'Not Found' if the article with the provided ID does not exist in the database", () => {
+    return request(app)
+      .get("/api/articles/500/comments")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("The item requested does not exist in the database");
+      });
+  });
+  test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
+    return request(app)
+      .get("/api/articles/notAnId/comments")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: the identifier is not valid");
+      });
+  });
 });
 
 describe("GET /aqi", () => {
@@ -174,8 +198,8 @@ describe("GET /aqi", () => {
     return request(app)
       .get("/aqi")
       .expect(404)
-      .then(({ body }) => {
-        expect(body.msg).toBe("This endpoint does not exist.");
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("This endpoint does not exist.");
       });
   });
 });
