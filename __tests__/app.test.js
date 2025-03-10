@@ -140,6 +140,35 @@ describe("GET /api/articles/:article_id", () => {
   });
 });
 
+describe("GET /api/articles/:article_id/comments", () => {
+  test("200: Responds with an array of all comments for the article with the provided ID", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments.length).toBe(11);
+        comments.forEach((comment) => {
+          const { comment_id, votes, created_at, author, body, article_id } =
+            comment;
+          expect(article_id).toBe(1);
+          expect(typeof comment_id).toBe("number");
+          expect(typeof votes).toBe("number");
+          expect(typeof created_at).toBe("string");
+          expect(typeof author).toBe("string");
+          expect(typeof body).toBe("string");
+        });
+      });
+  });
+  test("200: The comments are sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body: { comments } }) => {
+        expect(comments).toBeSorted({ key: "created_at", descending: true });
+      });
+  });
+});
+
 describe("GET /aqi", () => {
   test("404: Responds with a message about the endpoint not existing", () => {
     return request(app)
