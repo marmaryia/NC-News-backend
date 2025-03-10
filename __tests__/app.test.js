@@ -39,6 +39,63 @@ describe("GET /api/topics", () => {
   });
 });
 
+describe("GET /api/articles", () => {
+  test("200: Responds with an array of all article objects", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles.length).toBe(13);
+        articles.forEach((article) => {
+          const {
+            article_id,
+            title,
+            topic,
+            author,
+            created_at,
+            votes,
+            article_img_url,
+            comment_count,
+          } = article;
+          expect(typeof article_id).toBe("number");
+          expect(typeof title).toBe("string");
+          expect(typeof topic).toBe("string");
+          expect(typeof author).toBe("string");
+          expect(typeof created_at).toBe("string");
+          expect(typeof votes).toBe("number");
+          expect(typeof article_img_url).toBe("string");
+          expect(typeof comment_count).toBe("number");
+        });
+      });
+  });
+  test("200: The articles are sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles[0].article_id).toBe(3);
+      });
+  });
+  test("200: The comment_count property represents the number of comments for the article", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles[0].comment_count).toBe(2);
+      });
+  });
+  test("200: The article objects have no body property", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        articles.forEach((article) => {
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   test("200: Responds with the article at the requested article ID", () => {
     return request(app)
