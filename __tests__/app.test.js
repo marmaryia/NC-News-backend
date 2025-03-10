@@ -225,14 +225,27 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "lurker", body: "Fantastic!" })
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe(
-          "The item with the given identifier does not exist in the database"
-        );
+        expect(msg).toBe("Nothing found with this identifier.");
       });
   });
-
-  test.todo("incomplete data provided");
-  test.todo("incorrect data provided + user does not exist");
+  test("400: Responds with 'Bad Request' if the comment body to add to the article is incomplete", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ body: "Fantastic!" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: Incomplete data provided");
+      });
+  });
+  test("404: Responds with 'Not Found' if the foreign key in the comment body does not exist in the database", () => {
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({ username: 5, body: "Fantastic!" })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Nothing found with this identifier.");
+      });
+  });
 });
 
 describe("GET /aqi", () => {
