@@ -180,7 +180,16 @@ describe("GET /api/articles/:article_id", () => {
           created_at: expect.any(String),
           votes: expect.any(Number),
           article_img_url: expect.any(String),
+          comment_count: expect.any(Number),
         });
+      });
+  });
+  test("200: The comment_count property represents the number of comments for the article", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body: { article } }) => {
+        expect(article.comment_count).toBe(2);
       });
   });
   test("404: Responds with 'Not Found' if an article with the requested ID does not exist in the database", () => {
