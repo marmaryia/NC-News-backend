@@ -10,7 +10,7 @@
     }
   },
   "GET /api/articles": {
-    "description": "serves an array of all articles",
+    "description": "serves an array of all articles, which can be sorted by any valid column name (default: created_at), and where the order can be set to asc (default: desc)",
     "queries": ["author", "topic", "sort_by", "order"],
     "exampleResponse": {
       "articles": [
