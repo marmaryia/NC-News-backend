@@ -32,8 +32,10 @@ describe("GET /api/topics", () => {
       .then(({ body: { topics } }) => {
         expect(topics.length).toBe(3);
         topics.forEach((topic) => {
-          expect(typeof topic.slug).toBe("string");
-          expect(typeof topic.description).toBe("string");
+          expect(topic).toMatchObject({
+            slug: expect.any(String),
+            description: expect.any(String),
+          });
         });
       });
   });
@@ -47,24 +49,16 @@ describe("GET /api/articles", () => {
       .then(({ body: { articles } }) => {
         expect(articles.length).toBe(13);
         articles.forEach((article) => {
-          const {
-            article_id,
-            title,
-            topic,
-            author,
-            created_at,
-            votes,
-            article_img_url,
-            comment_count,
-          } = article;
-          expect(typeof article_id).toBe("number");
-          expect(typeof title).toBe("string");
-          expect(typeof topic).toBe("string");
-          expect(typeof author).toBe("string");
-          expect(typeof created_at).toBe("string");
-          expect(typeof votes).toBe("number");
-          expect(typeof article_img_url).toBe("string");
-          expect(typeof comment_count).toBe("number");
+          expect(article).toMatchObject({
+            article_id: expect.any(Number),
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
         });
       });
   });
@@ -102,24 +96,16 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/3")
       .expect(200)
       .then(({ body: { article } }) => {
-        const {
-          article_id,
-          title,
-          topic,
-          author,
-          body,
-          created_at,
-          votes,
-          article_img_url,
-        } = article;
-        expect(article_id).toBe(3);
-        expect(typeof title).toBe("string");
-        expect(typeof topic).toBe("string");
-        expect(typeof author).toBe("string");
-        expect(typeof body).toBe("string");
-        expect(typeof created_at).toBe("string");
-        expect(typeof votes).toBe("number");
-        expect(typeof article_img_url).toBe("string");
+        expect(article).toMatchObject({
+          article_id: 3,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          article_img_url: expect.any(String),
+        });
       });
   });
   test("404: Responds with 'Not Found' if an article with the requested ID does not exist in the database", () => {
@@ -147,24 +133,16 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: -1 })
       .expect(202)
       .then(({ body: { article } }) => {
-        const {
-          article_id,
-          title,
-          topic,
-          author,
-          body,
-          created_at,
-          votes,
-          article_img_url,
-        } = article;
-        expect(votes).toBe(99);
-        expect(article_id).toBe(1);
-        expect(typeof title).toBe("string");
-        expect(typeof topic).toBe("string");
-        expect(typeof author).toBe("string");
-        expect(typeof body).toBe("string");
-        expect(typeof created_at).toBe("string");
-        expect(typeof article_img_url).toBe("string");
+        expect(article).toMatchObject({
+          votes: 99,
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          article_img_url: expect.any(String),
+        });
       });
   });
   test("404: Responds with 'Not Found' if an article with the requested ID does not exist in the database", () => {
@@ -213,14 +191,14 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then(({ body: { comments } }) => {
         expect(comments.length).toBe(11);
         comments.forEach((comment) => {
-          const { comment_id, votes, created_at, author, body, article_id } =
-            comment;
-          expect(article_id).toBe(1);
-          expect(typeof comment_id).toBe("number");
-          expect(typeof votes).toBe("number");
-          expect(typeof created_at).toBe("string");
-          expect(typeof author).toBe("string");
-          expect(typeof body).toBe("string");
+          expect(comment).toMatchObject({
+            article_id: 1,
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+          });
         });
       });
   });
@@ -265,14 +243,14 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "lurker", body: "Fantastic!" })
       .expect(201)
       .then(({ body: { comment } }) => {
-        const { comment_id, article_id, body, votes, author, created_at } =
-          comment;
-        expect(comment_id).toBe(19);
-        expect(article_id).toBe(2);
-        expect(body).toBe("Fantastic!");
-        expect(votes).toBe(0);
-        expect(author).toBe("lurker");
-        expect(typeof created_at).toBe("string");
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          article_id: 2,
+          body: "Fantastic!",
+          votes: 0,
+          author: "lurker",
+          created_at: expect.any(String),
+        });
       });
   });
   test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
