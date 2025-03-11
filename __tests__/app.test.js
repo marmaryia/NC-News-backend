@@ -88,6 +88,16 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  describe("?sort_by={column_name}", () => {
+    test("200: The articles can be sorted by any valid column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSorted({ key: "author", descending: true });
+        });
+    });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
