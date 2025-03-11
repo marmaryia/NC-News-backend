@@ -144,7 +144,14 @@ describe("GET /api/articles", () => {
           expect(msg).toBe("Nothing found with this value");
         });
     });
-    test.todo("topic exists but no articles");
+    test("200: Responds with an empty array if the requested topic exists but there are no articles about it", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(0);
+        });
+    });
   });
 });
 
