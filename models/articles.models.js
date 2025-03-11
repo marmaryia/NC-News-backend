@@ -32,6 +32,12 @@ exports.fetchArticleById = (article_id) => {
 };
 
 exports.updateArticleById = (article_id, inc_votes) => {
+  if (!inc_votes) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad request: incomplete data provided",
+    });
+  }
   const sqlString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
   const promises = [
     db.query(sqlString, [inc_votes, article_id]),
