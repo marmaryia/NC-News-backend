@@ -87,10 +87,22 @@
       }
     }
   },
-
   "DELETE /api/comments/:comment_id": {
     "description": "deletes the comment with the provided ID and responds with status 204 and no response body",
     "queries": [],
     "exampleResponse": {}
+  },
+  "GET /api/users": {
+    "description": "serves an array of all users",
+    "queries": [],
+    "exampleResponse": {
+      "users": [
+        {
+          "username": "lurker",
+          "name": "paul",
+          "avalar_url": "some_avalar_url"
+        }
+      ]
+    }
   }
 }
