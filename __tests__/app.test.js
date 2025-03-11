@@ -313,6 +313,28 @@ describe("POST /api/articles/:article_id/comments", () => {
   });
 });
 
+describe("DELETE /api/comments/:comment_id", () => {
+  test("204: No content", () => {
+    return request(app).delete("/api/comments/3").expect(204);
+  });
+  test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
+    return request(app)
+      .delete("/api/comments/notAnId")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: invalid input");
+      });
+  });
+  test("404: Responds with 'Not Found' if no comment with the provided ID exists in the database", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Nothing found with this identifier.");
+      });
+  });
+});
+
 describe("GET /aqi", () => {
   test("404: Responds with a message about the endpoint not existing", () => {
     return request(app)
