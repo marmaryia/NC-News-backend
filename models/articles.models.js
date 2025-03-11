@@ -2,7 +2,14 @@ const format = require("pg-format");
 const db = require("../db/connection");
 const { checkExists } = require("../app.utils");
 
-exports.fetchAllArticles = (sort_by, order, topic) => {
+exports.fetchAllArticles = (sort_by, order, topic, otherQueries) => {
+  if (Object.keys(otherQueries).length !== 0) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: the query is not supported",
+    });
+  }
+
   const queryValues = [];
   const promises = [];
   sort_by = sort_by || "created_at";

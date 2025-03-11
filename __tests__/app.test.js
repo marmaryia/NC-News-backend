@@ -153,6 +153,16 @@ describe("GET /api/articles", () => {
         });
     });
   });
+  describe("?invalid_query={something}", () => {
+    test("400: Responds with 'Bad Request' if the query is not supported", () => {
+      return request(app)
+        .get("/api/articles?some_query=notAValue")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad Request: the query is not supported");
+        });
+    });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
