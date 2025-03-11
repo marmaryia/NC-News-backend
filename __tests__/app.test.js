@@ -127,11 +127,11 @@ describe("GET /api/articles/:article_id", () => {
 });
 
 describe("PATCH /api/articles/:article_id", () => {
-  test("202: Responds with an object representing the updated article", () => {
+  test("200: Responds with an object representing the updated article", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: -1 })
-      .expect(202)
+      .expect(200)
       .then(({ body: { article } }) => {
         expect(article).toMatchObject({
           votes: 99,
