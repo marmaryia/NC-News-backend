@@ -7,7 +7,7 @@ exports.checkExists = (table, column, value) => {
     if (rows.length === 0) {
       return Promise.reject({
         status: 404,
-        msg: "Nothing found with this identifier.",
+        msg: "Nothing found with this value",
       });
     }
   });

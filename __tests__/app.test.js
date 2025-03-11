@@ -124,6 +124,45 @@ describe("GET /api/articles", () => {
         });
     });
   });
+  describe("?topic={topic_name}", () => {
+    test("200: Responds only with articles on the requested topic", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(1);
+          articles.forEach((article) => {
+            expect(article.topic).toBe("cats");
+          });
+        });
+    });
+    test("404: Responds with 'Not Found' if the requested topic is not present in the database", () => {
+      return request(app)
+        .get("/api/articles?topic=notATopic")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Nothing found with this value");
+        });
+    });
+    test("200: Responds with an empty array if the requested topic exists but there are no articles about it", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(0);
+        });
+    });
+  });
+  describe("?invalid_query={something}", () => {
+    test("400: Responds with 'Bad Request' if the query is not supported", () => {
+      return request(app)
+        .get("/api/articles?some_query=notAValue")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad Request: the query is not supported");
+        });
+    });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
@@ -344,7 +383,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .delete("/api/comments/1000")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Nothing found with this identifier.");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
 });

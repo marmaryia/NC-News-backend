@@ -1,18 +1,38 @@
 const format = require("pg-format");
 const db = require("../db/connection");
+const { checkExists } = require("../app.utils");
 
-exports.fetchAllArticles = (sort_by, order) => {
+exports.fetchAllArticles = (sort_by, order, topic, otherQueries) => {
+  if (Object.keys(otherQueries).length !== 0) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: the query is not supported",
+    });
+  }
+
+  const queryValues = [];
+  const promises = [];
   sort_by = sort_by || "created_at";
   order = order || "DESC";
-  const sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, 
+
+  let sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, 
                     articles.created_at, articles.votes, articles.article_img_url,
                     CAST (COUNT(comments.comment_id) AS INT) as comment_count FROM articles 
-              LEFT JOIN comments ON articles.article_id = comments.article_id
-              GROUP BY articles.author, articles.title, articles.article_id, articles.topic, 
+              LEFT JOIN comments ON articles.article_id = comments.article_id`;
+  const sqlQueryEnd = ` GROUP BY articles.author, articles.title, articles.article_id, articles.topic, 
               articles.created_at, articles.votes, articles.article_img_url
               ORDER BY %I %s`;
+
+  if (topic) {
+    promises.push(checkExists("topics", "slug", topic));
+    queryValues.push(topic);
+    sqlQuery += ` WHERE topic = $1`;
+  }
+
+  sqlQuery += sqlQueryEnd;
   const formattedSqlQuery = format(sqlQuery, sort_by, order);
-  return db.query(formattedSqlQuery).then(({ rows }) => {
+  promises.unshift(db.query(formattedSqlQuery, queryValues));
+  return Promise.all(promises).then(([{ rows }]) => {
     return rows;
   });
 };
