@@ -1,20 +1,20 @@
+const format = require("pg-format");
 const db = require("../db/connection");
 
-exports.fetchAllArticles = () => {
-  return db
-    .query(
-      `SELECT articles.author, articles.title, articles.article_id, articles.topic, 
-        articles.created_at, articles.votes, articles.article_img_url,
-        CAST (COUNT(comments.comment_id) AS INT) as comment_count FROM articles 
-        LEFT JOIN comments
-        ON articles.article_id = comments.article_id
-        GROUP BY articles.author, articles.title, articles.article_id, articles.topic, 
-        articles.created_at, articles.votes, articles.article_img_url
-        ORDER BY created_at DESC`
-    )
-    .then(({ rows }) => {
-      return rows;
-    });
+exports.fetchAllArticles = (sort_by, order) => {
+  sort_by = sort_by || "created_at";
+  order = order || "DESC";
+  const sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, 
+                    articles.created_at, articles.votes, articles.article_img_url,
+                    CAST (COUNT(comments.comment_id) AS INT) as comment_count FROM articles 
+              LEFT JOIN comments ON articles.article_id = comments.article_id
+              GROUP BY articles.author, articles.title, articles.article_id, articles.topic, 
+              articles.created_at, articles.votes, articles.article_img_url
+              ORDER BY %I %s`;
+  const formattedSqlQuery = format(sqlQuery, sort_by, order);
+  return db.query(formattedSqlQuery).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.fetchArticleById = (article_id) => {

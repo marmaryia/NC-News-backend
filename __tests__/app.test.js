@@ -88,6 +88,42 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  describe("?sort_by={column_name}", () => {
+    test("200: The articles can be sorted by any valid column", () => {
+      return request(app)
+        .get("/api/articles?sort_by=author")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSorted({ key: "author", descending: true });
+        });
+    });
+    test("400: Responds with 'Bad Request' if given an invalid column name", () => {
+      return request(app)
+        .get("/api/articles?sort_by=not_a_column")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request: invalid input");
+        });
+    });
+  });
+  describe("?order={asc or desc}", () => {
+    test("200: The articles can be sorted in ascending order", () => {
+      return request(app)
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).toBeSorted({ key: "created_at" });
+        });
+    });
+    test("400: Responds with 'Bad Request' if given an invalid order option", () => {
+      return request(app)
+        .get("/api/articles?order=not_valid_order")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request: invalid input");
+        });
+    });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {

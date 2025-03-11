@@ -4,10 +4,15 @@ const {
   updateArticleById,
 } = require("../models/articles.models");
 
-exports.getAllArticles = (request, response) => {
-  fetchAllArticles().then((articles) => {
-    response.status(200).send({ articles });
-  });
+exports.getAllArticles = (request, response, next) => {
+  const { sort_by, order } = request.query;
+  fetchAllArticles(sort_by, order)
+    .then((articles) => {
+      response.status(200).send({ articles });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };
 
 exports.getArticleById = (request, response, next) => {
