@@ -86,5 +86,11 @@
         "votes": 0
       }
     }
+  },
+
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the comment with the provided ID and responds with status 204 and no response body",
+    "queries": [],
+    "exampleResponse": {}
   }
 }
