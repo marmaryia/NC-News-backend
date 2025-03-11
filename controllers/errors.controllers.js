@@ -15,7 +15,7 @@ exports.handleCustomErrors = (err, request, response, next) => {
 };
 
 exports.handleDatabaseErrors = (err, request, response, next) => {
-  if (err.code === "22P02") {
+  if (err.code === "22P02" || err.code === "42703") {
     response.status(400).send({ msg: "Bad request: invalid input" });
   } else if (err.code === "23503") {
     response.status(404).send({
