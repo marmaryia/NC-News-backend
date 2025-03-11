@@ -124,6 +124,31 @@ describe("GET /api/articles", () => {
         });
     });
   });
+  describe("?topic={topic_name}", () => {
+    test("200: Responds only with articles on the requested topic", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(1);
+          articles.forEach((article) => {
+            expect(article.topic).toBe("cats");
+          });
+        });
+    });
+    // test("404: Responds with 'Not Found' if the requested topic is not present in the database", () => {
+    //   return request(app)
+    //     .get("/api/articles?topic=cats")
+    //     .expect(200)
+    //     .then(({ body: { articles } }) => {
+    //       expect(articles.length).toBe(1);
+    //       articles.forEach((article) => {
+    //         expect(article.topic).toBe("cats");
+    //       });
+    //     });
+    // });
+    test.todo("topic exists but no articles");
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
