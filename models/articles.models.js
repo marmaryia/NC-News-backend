@@ -1,8 +1,10 @@
 const format = require("pg-format");
 const db = require("../db/connection");
+const { checkExists } = require("../app.utils");
 
 exports.fetchAllArticles = (sort_by, order, topic) => {
   const queryValues = [];
+  const promises = [];
   sort_by = sort_by || "created_at";
   order = order || "DESC";
 
@@ -15,13 +17,15 @@ exports.fetchAllArticles = (sort_by, order, topic) => {
               ORDER BY %I %s`;
 
   if (topic) {
+    promises.push(checkExists("topics", "slug", topic));
     queryValues.push(topic);
     sqlQuery += ` WHERE topic = $1`;
   }
 
   sqlQuery += sqlQueryEnd;
   const formattedSqlQuery = format(sqlQuery, sort_by, order);
-  return db.query(formattedSqlQuery, queryValues).then(({ rows }) => {
+  promises.unshift(db.query(formattedSqlQuery, queryValues));
+  return Promise.all(promises).then(([{ rows }]) => {
     return rows;
   });
 };

@@ -136,17 +136,14 @@ describe("GET /api/articles", () => {
           });
         });
     });
-    // test("404: Responds with 'Not Found' if the requested topic is not present in the database", () => {
-    //   return request(app)
-    //     .get("/api/articles?topic=cats")
-    //     .expect(200)
-    //     .then(({ body: { articles } }) => {
-    //       expect(articles.length).toBe(1);
-    //       articles.forEach((article) => {
-    //         expect(article.topic).toBe("cats");
-    //       });
-    //     });
-    // });
+    test("404: Responds with 'Not Found' if the requested topic is not present in the database", () => {
+      return request(app)
+        .get("/api/articles?topic=notATopic")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Nothing found with this value");
+        });
+    });
     test.todo("topic exists but no articles");
   });
 });
@@ -369,7 +366,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .delete("/api/comments/1000")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Nothing found with this identifier.");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
 });
