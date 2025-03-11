@@ -32,12 +32,12 @@ exports.fetchArticleById = (article_id) => {
 };
 
 exports.updateArticleById = (article_id, inc_votes) => {
-  return db
-    .query(
-      `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`,
-      [inc_votes, article_id]
-    )
-    .then(({ rows }) => {
-      return rows[0];
-    });
+  const sqlString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
+  const promises = [
+    db.query(sqlString, [inc_votes, article_id]),
+    this.fetchArticleById(article_id),
+  ];
+  return Promise.all(promises).then(([{ rows }]) => {
+    return rows[0];
+  });
 };

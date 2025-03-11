@@ -24,7 +24,11 @@ exports.getArticleById = (request, response, next) => {
 exports.patchArticleById = (request, response, next) => {
   const { article_id } = request.params;
   const { inc_votes } = request.body;
-  updateArticleById(article_id, inc_votes).then((article) => {
-    response.status(202).send({ article });
-  });
+  updateArticleById(article_id, inc_votes)
+    .then((article) => {
+      response.status(202).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

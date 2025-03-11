@@ -143,7 +143,7 @@ describe("GET /api/articles/:article_id", () => {
 describe("PATCH /api/articles/:article_id", () => {
   test("202: Responds with an object representing the updated article", () => {
     return request(app)
-      .patch("/api/articles/2")
+      .patch("/api/articles/1")
       .send({ inc_votes: -1 })
       .expect(202)
       .then(({ body: { article } }) => {
@@ -157,14 +157,23 @@ describe("PATCH /api/articles/:article_id", () => {
           votes,
           article_img_url,
         } = article;
-        expect(votes).toBe(-1);
-        expect(article_id).toBe(2);
+        expect(votes).toBe(99);
+        expect(article_id).toBe(1);
         expect(typeof title).toBe("string");
         expect(typeof topic).toBe("string");
         expect(typeof author).toBe("string");
         expect(typeof body).toBe("string");
         expect(typeof created_at).toBe("string");
         expect(typeof article_img_url).toBe("string");
+      });
+  });
+  test("404: Responds with 'Not Found' if an article with the requested ID does not exist in the database", () => {
+    return request(app)
+      .patch("/api/articles/500")
+      .send({ inc_votes: 5 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("The item requested does not exist in the database");
       });
   });
 });
