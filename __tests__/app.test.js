@@ -115,6 +115,14 @@ describe("GET /api/articles", () => {
           expect(articles).toBeSorted({ key: "created_at" });
         });
     });
+    test("400: Responds with 'Bad Request' if given an invalid order option", () => {
+      return request(app)
+        .get("/api/articles?order=not_valid_order")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request: invalid input");
+        });
+    });
   });
 });
 
