@@ -135,7 +135,72 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/notAnId")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: the identifier is not valid");
+        expect(msg).toBe("Bad request: invalid input");
+      });
+  });
+});
+
+describe("PATCH /api/articles/:article_id", () => {
+  test("202: Responds with an object representing the updated article", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -1 })
+      .expect(202)
+      .then(({ body: { article } }) => {
+        const {
+          article_id,
+          title,
+          topic,
+          author,
+          body,
+          created_at,
+          votes,
+          article_img_url,
+        } = article;
+        expect(votes).toBe(99);
+        expect(article_id).toBe(1);
+        expect(typeof title).toBe("string");
+        expect(typeof topic).toBe("string");
+        expect(typeof author).toBe("string");
+        expect(typeof body).toBe("string");
+        expect(typeof created_at).toBe("string");
+        expect(typeof article_img_url).toBe("string");
+      });
+  });
+  test("404: Responds with 'Not Found' if an article with the requested ID does not exist in the database", () => {
+    return request(app)
+      .patch("/api/articles/500")
+      .send({ inc_votes: 5 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("The item requested does not exist in the database");
+      });
+  });
+  test("400: Responds with 'Bad Request' if the requested ID is not valid", () => {
+    return request(app)
+      .patch("/api/articles/notAnId")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: invalid input");
+      });
+  });
+  test("400: Responds with 'Bad Request' if incomplete data provided", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: incomplete data provided");
+      });
+  });
+  test("400: Responds with 'Bad Request' if the data provided is not valid", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "notANumber" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: invalid input");
       });
   });
 });
@@ -188,7 +253,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/notAnId/comments")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: the identifier is not valid");
+        expect(msg).toBe("Bad request: invalid input");
       });
   });
 });
@@ -216,7 +281,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "lurker", body: "Fantastic!" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: the identifier is not valid");
+        expect(msg).toBe("Bad request: invalid input");
       });
   });
   test("404: Responds with 'Not Found' if the article with the provided ID does not exist in the database", () => {
