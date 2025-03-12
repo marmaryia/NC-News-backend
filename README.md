@@ -1,6 +1,6 @@
 # NC News
 
-Hosted version: https://be-nc-news-jql4.onrender.com
+Hosted version: https://be-nc-news-jql4.onrender.com/api
 
 This project mimics the backend service of a news website.
 
@@ -22,7 +22,7 @@ To seed the local databases, npm run:
 
 To run tests:
 
-- npm run test (all test);
+- npm run test (all tests);
   OR
 - npm test test_file_name (only tests from the file).
 
