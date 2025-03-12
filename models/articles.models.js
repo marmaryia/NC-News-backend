@@ -2,7 +2,7 @@ const format = require("pg-format");
 const db = require("../db/connection");
 const { checkExists } = require("../app.utils");
 
-exports.fetchAllArticles = (sort_by, order, topic, otherQueries) => {
+exports.fetchAllArticles = (sort_by, order, topic, limit, p, otherQueries) => {
   if (Object.keys(otherQueries).length !== 0) {
     return Promise.reject({
       status: 400,
@@ -10,29 +10,44 @@ exports.fetchAllArticles = (sort_by, order, topic, otherQueries) => {
     });
   }
 
+  let sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, 
+                  articles.created_at, articles.votes, articles.article_img_url,
+                  CAST (COUNT(comments.comment_id) AS INT) AS comment_count
+                  FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
+  const sqlQueryEnd = ` GROUP BY articles.article_id
+                        ORDER BY %I %s
+                        LIMIT %L
+                        OFFSET %L`;
+  let sqlQueryForTotal = `SELECT CAST(COUNT (*) AS INT) AS total_count FROM articles`;
   const queryValues = [];
   const promises = [];
   sort_by = sort_by || "created_at";
   order = order || "DESC";
-
-  let sqlQuery = `SELECT articles.author, articles.title, articles.article_id, articles.topic, 
-                    articles.created_at, articles.votes, articles.article_img_url,
-                    CAST (COUNT(comments.comment_id) AS INT) AS comment_count
-                    FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id`;
-  const sqlQueryEnd = ` GROUP BY articles.article_id
-              ORDER BY %I %s`;
+  limit = limit || 10;
+  const offsetValue = limit * ((p || 1) - 1);
 
   if (topic) {
     promises.push(checkExists("topics", "slug", topic));
     queryValues.push(topic);
     sqlQuery += ` WHERE topic = $1`;
+    sqlQueryForTotal += ` WHERE topic = $1`;
   }
 
   sqlQuery += sqlQueryEnd;
-  const formattedSqlQuery = format(sqlQuery, sort_by, order);
+  const formattedSqlQuery = format(
+    sqlQuery,
+    sort_by,
+    order,
+    limit,
+    offsetValue
+  );
+
+  promises.unshift(db.query(sqlQueryForTotal, queryValues));
   promises.unshift(db.query(formattedSqlQuery, queryValues));
-  return Promise.all(promises).then(([{ rows }]) => {
-    return rows;
+  return Promise.all(promises).then(([articlesRows, totalCount]) => {
+    const articles = articlesRows.rows;
+    const { total_count } = totalCount.rows[0];
+    return { articles, total_count };
   });
 };
 
