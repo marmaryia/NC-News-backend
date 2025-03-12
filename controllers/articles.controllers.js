@@ -2,6 +2,7 @@ const {
   fetchArticleById,
   fetchAllArticles,
   updateArticleById,
+  addArticle,
 } = require("../models/articles.models");
 
 exports.getAllArticles = (request, response, next) => {
@@ -33,6 +34,17 @@ exports.patchArticleById = (request, response, next) => {
   updateArticleById(article_id, inc_votes)
     .then((article) => {
       response.status(200).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.postArticle = (request, response, next) => {
+  const { author, title, body, topic, article_img_url } = request.body;
+  addArticle(author, title, body, topic, article_img_url)
+    .then((article) => {
+      response.status(201).send({ article });
     })
     .catch((err) => {
       next(err);

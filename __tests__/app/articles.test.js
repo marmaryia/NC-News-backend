@@ -128,6 +128,72 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("POST /api/articles", () => {
+  test("201: Responds with an object representing the newly added article", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "lurker",
+        title: "New Article",
+        body: "New article text",
+        topic: "cats",
+        article_img_url: "some_url",
+      })
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 14,
+          title: "New Article",
+          topic: "cats",
+          author: "lurker",
+          body: "New article text",
+          created_at: expect.any(String),
+          votes: 0,
+          article_img_url: "some_url",
+          comment_count: 0,
+        });
+      });
+  });
+  test("201: Accepts requests without article_img_url specified", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "lurker",
+        title: "New Article",
+        body: "New article text",
+        topic: "cats",
+      })
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article.article_img_url).toBe(null);
+      });
+  });
+  test("400: Responds with 'Bad Request' if the request body incomplete", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: Incomplete data provided");
+      });
+  });
+  test("404: Responds with 'Not Found' if a foreign key in the article body does not exist in the database", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "unknown author",
+        title: "New Article",
+        body: "New article text",
+        topic: "cats",
+        article_img_url: "some_url",
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Nothing found with this identifier.");
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   test("200: Responds with the article at the requested article ID", () => {
     return request(app)

@@ -39,8 +39,8 @@ exports.fetchAllArticles = (sort_by, order, topic, otherQueries) => {
 exports.fetchArticleById = (article_id) => {
   return db
     .query(
-      `SELECT articles.*, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles
-      LEFT JOIN comments ON articles.article_id = comments.article_id
+      `SELECT articles.*, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+      FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id
       WHERE articles.article_id = $1
       GROUP BY articles.article_id`,
       [article_id]
@@ -71,4 +71,21 @@ exports.updateArticleById = (article_id, inc_votes) => {
   return Promise.all(promises).then(([{ rows }]) => {
     return rows[0];
   });
+};
+
+exports.addArticle = (author, title, body, topic, article_img_url) => {
+  if (!author || !title || !body || !topic) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: Incomplete data provided",
+    });
+  }
+  const sqlString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+
+  return db
+    .query(sqlString, [author, title, body, topic, article_img_url])
+    .then(({ rows }) => {
+      rows[0].comment_count = 0;
+      return rows[0];
+    });
 };
