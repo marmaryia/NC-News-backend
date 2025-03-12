@@ -349,3 +349,36 @@ describe("PATCH /api/articles/:article_id", () => {
       });
   });
 });
+
+describe("DELETE /api/articles/:article_id", () => {
+  test("204: No content", () => {
+    return request(app).delete("/api/articles/3").expect(204);
+  });
+  test("404: Responds with 'Not Found' if an article with the request ID does not exist in the database", () => {
+    return request(app)
+      .delete("/api/articles/500")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Nothing found with this value");
+      });
+  });
+  test("400: Responds with 'Bad Request' if the article ID provided is not valid", () => {
+    return request(app)
+      .delete("/api/articles/one")
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: invalid input");
+      });
+  });
+  test("204: Deletes the article's comments as well", () => {
+    return request(app)
+      .delete("/api/articles/3")
+      .expect(204)
+      .then(() => {
+        return db.query(`SELECT * FROM comments WHERE article_id = 3`);
+      })
+      .then(({ rows }) => {
+        expect(rows.length).toBe(0);
+      });
+  });
+});

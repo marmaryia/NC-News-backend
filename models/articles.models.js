@@ -104,3 +104,9 @@ exports.addArticle = (author, title, body, topic, article_img_url) => {
       return rows[0];
     });
 };
+
+exports.removeArticleById = (article_id) => {
+  return checkExists("articles", "article_id", article_id).then(() => {
+    return db.query(`DELETE FROM articles WHERE article_id = $1`, [article_id]);
+  });
+};
