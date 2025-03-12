@@ -104,5 +104,16 @@
         }
       ]
     }
+  },
+  "GET /api/users/:username": {
+    "description": "serves an object representing the user with the requested username",
+    "queries": [],
+    "exampleResponse": {
+      "users": {
+        "username": "lurker",
+        "name": "paul",
+        "avalar_url": "some_avalar_url"
+      }
+    }
   }
 }
