@@ -154,6 +154,20 @@ describe("POST /api/articles", () => {
         });
       });
   });
+  test("201: Accepts requests without article_img_url specified", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "lurker",
+        title: "New Article",
+        body: "New article text",
+        topic: "cats",
+      })
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article.article_img_url).toBe(null);
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
