@@ -39,8 +39,8 @@ exports.fetchAllArticles = (sort_by, order, topic, otherQueries) => {
 exports.fetchArticleById = (article_id) => {
   return db
     .query(
-      `SELECT articles.*, CAST(COUNT(comments.comment_id) AS INT) AS comment_count FROM articles
-      LEFT JOIN comments ON articles.article_id = comments.article_id
+      `SELECT articles.*, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+      FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id
       WHERE articles.article_id = $1
       GROUP BY articles.article_id`,
       [article_id]
@@ -74,14 +74,12 @@ exports.updateArticleById = (article_id, inc_votes) => {
 };
 
 exports.addArticle = (author, title, body, topic, article_img_url) => {
-  const sqlString = `WITH temporary_table AS (INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *)
-                    SELECT temporary_table.*, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
-                    FROM temporary_table LEFT JOIN comments ON temporary_table.article_id = comments.article_id
-                    GROUP BY temporary_table.article_id, temporary_table.title, temporary_table.topic, temporary_table.author, temporary_table.votes, temporary_table.body, temporary_table.created_at, temporary_table.article_img_url;`;
+  const sqlString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
 
   return db
     .query(sqlString, [author, title, body, topic, article_img_url])
     .then(({ rows }) => {
+      rows[0].comment_count = 0;
       return rows[0];
     });
 };
