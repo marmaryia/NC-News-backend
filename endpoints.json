@@ -25,6 +25,22 @@
       ]
     }
   },
+  "POST /api/articles": {
+    "description": "accepts an object with the properties of 'author' (foreign key), 'title', 'body', 'topic (foreign key)' and (optional) 'article_img_url', and serves an objects that represents the added article",
+    "queries": ["author", "topic", "sort_by", "order"],
+    "exampleResponse": {
+      "article": {
+        "article_id": 19,
+        "title": "Seafood substitutions are increasing",
+        "topic": "cooking",
+        "author": "weegembump",
+        "body": "Text from the article..",
+        "created_at": "2018-05-30T15:59:13.341Z",
+        "votes": 0,
+        "comment_count": 0
+      }
+    }
+  },
   "GET /api/articles/:article_id": {
     "description": "serves an object representing the article with the requested ID",
     "queries": [],
@@ -74,7 +90,7 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "accepts an object with the required properties of 'body' and 'username', where username refers to an existing user, and serves an objects that represents the comment added to the the article with the requested ID",
+    "description": "accepts an object with the required properties of 'body' and 'username' (foreign key), and serves an objects that represents the comment added to the the article with the requested ID",
     "queries": [],
     "exampleResponse": {
       "comment": {
