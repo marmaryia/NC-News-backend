@@ -2,6 +2,7 @@ const {
   deleteCommentById,
   getCommentsByArticleId,
   postCommentByArticleId,
+  patchCommentById,
 } = require("../controllers/comments.controllers");
 
 const commentsRouter = require("express").Router({ mergeParams: true });
@@ -11,6 +12,9 @@ commentsRouter
   .get(getCommentsByArticleId)
   .post(postCommentByArticleId);
 
-commentsRouter.delete("/:comment_id", deleteCommentById);
+commentsRouter
+  .route("/:comment_id")
+  .delete(deleteCommentById)
+  .patch(patchCommentById);
 
 module.exports = commentsRouter;

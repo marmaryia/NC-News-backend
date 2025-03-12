@@ -2,6 +2,7 @@ const {
   fetchCommentsByArticleId,
   addCommentByArticleId,
   removeCommentById,
+  updateCommentById,
 } = require("../models/comments.models");
 
 exports.getCommentsByArticleId = (request, response, next) => {
@@ -33,6 +34,18 @@ exports.deleteCommentById = (request, response, next) => {
   removeCommentById(comment_id)
     .then(() => {
       response.status(204).end();
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+
+exports.patchCommentById = (request, response, next) => {
+  const { comment_id } = request.params;
+  const { inc_votes } = request.body;
+  updateCommentById(comment_id, inc_votes)
+    .then((comment) => {
+      response.status(200).send({ comment });
     })
     .catch((err) => {
       next(err);
