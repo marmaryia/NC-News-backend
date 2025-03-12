@@ -40,6 +40,9 @@
     "setupFilesAfterEnv": [
       "jest-extended/all",
       "jest-sorted"
+    ],
+    "testPathIgnorePatterns": [
+      "index"
     ]
   }
 }
