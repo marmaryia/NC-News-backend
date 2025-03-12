@@ -72,3 +72,16 @@ exports.updateArticleById = (article_id, inc_votes) => {
     return rows[0];
   });
 };
+
+exports.addArticle = (author, title, body, topic, article_img_url) => {
+  const sqlString = `WITH temporary_table AS (INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *)
+                    SELECT temporary_table.*, CAST(COUNT(comments.comment_id) AS INT) AS comment_count
+                    FROM temporary_table LEFT JOIN comments ON temporary_table.article_id = comments.article_id
+                    GROUP BY temporary_table.article_id, temporary_table.title, temporary_table.topic, temporary_table.author, temporary_table.votes, temporary_table.body, temporary_table.created_at, temporary_table.article_img_url;`;
+
+  return db
+    .query(sqlString, [author, title, body, topic, article_img_url])
+    .then(({ rows }) => {
+      return rows[0];
+    });
+};

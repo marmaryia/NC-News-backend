@@ -128,6 +128,34 @@ describe("GET /api/articles", () => {
   });
 });
 
+describe("POST /api/articles", () => {
+  test("201: Responds with an object representing the newly added article", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "lurker",
+        title: "New Article",
+        body: "New article text",
+        topic: "cats",
+        article_img_url: "some_url",
+      })
+      .expect(201)
+      .then(({ body: { article } }) => {
+        expect(article).toMatchObject({
+          article_id: 14,
+          title: "New Article",
+          topic: "cats",
+          author: "lurker",
+          body: "New article text",
+          created_at: expect.any(String),
+          votes: 0,
+          article_img_url: "some_url",
+          comment_count: 0,
+        });
+      });
+  });
+});
+
 describe("GET /api/articles/:article_id", () => {
   test("200: Responds with the article at the requested article ID", () => {
     return request(app)
