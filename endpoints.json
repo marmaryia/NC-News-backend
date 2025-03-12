@@ -74,7 +74,7 @@
     }
   },
   "GET /api/articles/:article_id/comments": {
-    "description": "serves an array of objects that represent the comments for the article with the requested ID",
+    "description": "serves an array of comments for the article with the requested ID with pagination (default limit: 10)",
     "queries": [],
     "exampleResponse": {
       "comments": [
