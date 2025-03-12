@@ -5,12 +5,12 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("GET /api/articles", () => {
-  test("200: Responds with an array of all article objects", () => {
+  test("200: Responds with an array of 10 article objects as default if no limit specified", () => {
     return request(app)
       .get("/api/articles")
       .expect(200)
       .then(({ body: { articles } }) => {
-        expect(articles.length).toBe(13);
+        expect(articles.length).toBe(10);
         articles.forEach((article) => {
           expect(article).toMatchObject({
             article_id: expect.any(Number),
@@ -113,6 +113,50 @@ describe("GET /api/articles", () => {
         .expect(200)
         .then(({ body: { articles } }) => {
           expect(articles.length).toBe(0);
+        });
+    });
+  });
+  describe("?limit={number of responses}", () => {
+    test("200: Responds with the number of responses specified by the limit", () => {
+      return request(app)
+        .get("/api/articles?limit=5")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(5);
+        });
+    });
+    test("400: Responds with 'Bad Request' if the provided limit is not valid", () => {
+      return request(app)
+        .get("/api/articles?limit=five")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request: invalid input");
+        });
+    });
+  });
+  describe("?p={page at which to start}", () => {
+    test("200: Responds with an array of objects offset by the requested number of pages", () => {
+      return request(app)
+        .get("/api/articles?p=2")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(3);
+        });
+    });
+    test("200: Responds with an empty array if the requested page is out of scope", () => {
+      return request(app)
+        .get("/api/articles?p=100")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).toBe(0);
+        });
+    });
+    test("400: Responds with 'Bad Request' if the requested page is not valid", () => {
+      return request(app)
+        .get("/api/articles?p=one")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request: invalid input");
         });
     });
   });
