@@ -8,8 +8,11 @@ const commentsRouter = require("./comments-router");
 const articlesRouter = require("express").Router();
 
 articlesRouter.get("/", getAllArticles);
-articlesRouter.get("/:article_id", getArticleById);
-articlesRouter.patch("/:article_id", patchArticleById);
+
+articlesRouter
+  .route("/:article_id")
+  .get(getArticleById)
+  .patch(patchArticleById);
 
 articlesRouter.use("/:article_id/comments", commentsRouter);
 

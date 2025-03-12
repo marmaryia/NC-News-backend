@@ -6,8 +6,11 @@ const {
 
 const commentsRouter = require("express").Router({ mergeParams: true });
 
-commentsRouter.get("/", getCommentsByArticleId);
-commentsRouter.post("/", postCommentByArticleId);
+commentsRouter
+  .route("/")
+  .get(getCommentsByArticleId)
+  .post(postCommentByArticleId);
+
 commentsRouter.delete("/:comment_id", deleteCommentById);
 
 module.exports = commentsRouter;
