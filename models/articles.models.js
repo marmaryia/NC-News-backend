@@ -66,7 +66,7 @@ exports.updateArticleById = (article_id, inc_votes) => {
   const sqlString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
   const promises = [
     db.query(sqlString, [inc_votes, article_id]),
-    this.fetchArticleById(article_id),
+    checkExists("articles", "article_id", article_id),
   ];
   return Promise.all(promises).then(([{ rows }]) => {
     return rows[0];

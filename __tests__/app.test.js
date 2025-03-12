@@ -235,7 +235,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: 5 })
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("The item requested does not exist in the database");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
   test("400: Responds with 'Bad Request' if the requested ID is not valid", () => {
