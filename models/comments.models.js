@@ -1,11 +1,15 @@
+const format = require("pg-format");
 const { checkExists } = require("../app.utils");
 const db = require("../db/connection");
 const { fetchArticleById } = require("./articles.models");
 
-exports.fetchCommentsByArticleId = (article_id) => {
-  const queryString = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC`;
+exports.fetchCommentsByArticleId = (article_id, limit, p) => {
+  limit = limit || 10;
+  const offsetValue = limit * ((p || 1) - 1);
+  const sqlString = `SELECT * FROM comments WHERE article_id = $1 ORDER BY created_at DESC LIMIT %L OFFSET %L`;
+  const formattedSqlString = format(sqlString, limit, offsetValue);
   const promises = [
-    db.query(queryString, [article_id]),
+    db.query(formattedSqlString, [article_id]),
     fetchArticleById(article_id),
   ];
   return Promise.all(promises).then(([{ rows }]) => {

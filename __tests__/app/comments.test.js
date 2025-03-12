@@ -5,12 +5,12 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("GET /api/articles/:article_id/comments", () => {
-  test("200: Responds with an array of all comments for the article with the provided ID", () => {
+  test("200: Responds with an array of 10 comments for the article with the provided ID as default if no limit specified", () => {
     return request(app)
       .get("/api/articles/1/comments")
       .expect(200)
       .then(({ body: { comments } }) => {
-        expect(comments.length).toBe(11);
+        expect(comments.length).toBe(10);
         comments.forEach((comment) => {
           expect(comment).toMatchObject({
             article_id: 1,
@@ -54,6 +54,50 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then(({ body: { msg } }) => {
         expect(msg).toBe("Bad request: invalid input");
       });
+  });
+  describe("?limit={number of responses}", () => {
+    test("200: Responds with the number of responses specified by the limit", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=5")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments.length).toBe(5);
+        });
+    });
+    test("400: Responds with 'Bad Request' if the provided limit is not valid", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=five")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request: invalid input");
+        });
+    });
+  });
+  describe("?p={page at which to start}", () => {
+    test("200: Responds with an array of objects offset by the requested number of pages", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=2&limit=7")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments.length).toBe(4);
+        });
+    });
+    test("200: Responds with an empty array if the requested page is out of scope", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=100")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments.length).toBe(0);
+        });
+    });
+    test("400: Responds with 'Bad Request' if the requested page is not valid", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=one")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).toBe("Bad request: invalid input");
+        });
+    });
   });
 });
 
