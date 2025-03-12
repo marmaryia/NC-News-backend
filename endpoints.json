@@ -9,6 +9,13 @@
       "topics": [{ "slug": "football", "description": "Footie!" }]
     }
   },
+  "POST /api/topics": {
+    "description": "accepts an object with the requires properties 'slug' and 'description' and serves an object representing the added topic",
+    "queries": [],
+    "exampleResponse": {
+      "topics": { "slug": "weather", "description": "Grey..." }
+    }
+  },
   "GET /api/articles": {
     "description": "serves an array of all articles with pagination (default limit: 10), which can be filtered by topics, sorted by any valid column name (default: created_at), and where the order can be set to asc (default: desc)",
     "queries": ["author", "topic", "sort_by", "order", "limit", "p"],
@@ -90,7 +97,7 @@
     }
   },
   "POST /api/articles/:article_id/comments": {
-    "description": "accepts an object with the required properties of 'body' and 'username' (foreign key), and serves an objects that represents the comment added to the the article with the requested ID",
+    "description": "accepts an object with the required properties of 'body' and 'username' (foreign key), and serves an object that represents the comment added to the the article with the requested ID",
     "queries": [],
     "exampleResponse": {
       "comment": {
