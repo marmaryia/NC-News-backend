@@ -13,7 +13,6 @@ exports.postTopic = (request, response, next) => {
       response.status(201).send({ topic });
     })
     .catch((err) => {
-      console.log(err);
       next(err);
     });
 };
