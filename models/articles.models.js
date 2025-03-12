@@ -18,6 +18,7 @@ exports.fetchAllArticles = (sort_by, order, topic, limit, p, otherQueries) => {
                         ORDER BY %I %s
                         LIMIT %L
                         OFFSET %L`;
+  let sqlQueryForTotal = `SELECT CAST(COUNT (*) AS INT) AS total_count FROM articles`;
   const queryValues = [];
   const promises = [];
   sort_by = sort_by || "created_at";
@@ -29,6 +30,7 @@ exports.fetchAllArticles = (sort_by, order, topic, limit, p, otherQueries) => {
     promises.push(checkExists("topics", "slug", topic));
     queryValues.push(topic);
     sqlQuery += ` WHERE topic = $1`;
+    sqlQueryForTotal += ` WHERE topic = $1`;
   }
 
   sqlQuery += sqlQueryEnd;
@@ -39,9 +41,13 @@ exports.fetchAllArticles = (sort_by, order, topic, limit, p, otherQueries) => {
     limit,
     offsetValue
   );
+
+  promises.unshift(db.query(sqlQueryForTotal, queryValues));
   promises.unshift(db.query(formattedSqlQuery, queryValues));
-  return Promise.all(promises).then(([{ rows }]) => {
-    return rows;
+  return Promise.all(promises).then(([articlesRows, totalCount]) => {
+    const articles = articlesRows.rows;
+    const { total_count } = totalCount.rows[0];
+    return { articles, total_count };
   });
 };
 

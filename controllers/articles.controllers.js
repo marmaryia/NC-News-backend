@@ -9,8 +9,8 @@ exports.getAllArticles = (request, response, next) => {
   const { sort_by, order, topic, limit, p, ...otherQueries } = request.query;
 
   fetchAllArticles(sort_by, order, topic, limit, p, otherQueries)
-    .then((articles) => {
-      response.status(200).send({ articles });
+    .then(({ articles, total_count }) => {
+      response.status(200).send({ articles, total_count });
     })
     .catch((err) => {
       next(err);

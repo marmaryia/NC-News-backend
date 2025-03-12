@@ -51,6 +51,14 @@ describe("GET /api/articles", () => {
         });
       });
   });
+  test("200: The response includes the total_count property, representing the total number of results discounting the limit", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { total_count } }) => {
+        expect(total_count).toBe(13);
+      });
+  });
   describe("?sort_by={column_name}", () => {
     test("200: The articles can be sorted by any valid column", () => {
       return request(app)
@@ -92,7 +100,8 @@ describe("GET /api/articles", () => {
       return request(app)
         .get("/api/articles?topic=cats")
         .expect(200)
-        .then(({ body: { articles } }) => {
+        .then(({ body: { articles, total_count } }) => {
+          expect(total_count).toBe(1);
           expect(articles.length).toBe(1);
           articles.forEach((article) => {
             expect(article.topic).toBe("cats");
@@ -121,7 +130,8 @@ describe("GET /api/articles", () => {
       return request(app)
         .get("/api/articles?limit=5")
         .expect(200)
-        .then(({ body: { articles } }) => {
+        .then(({ body: { articles, total_count } }) => {
+          expect(total_count).toBe(13);
           expect(articles.length).toBe(5);
         });
     });
