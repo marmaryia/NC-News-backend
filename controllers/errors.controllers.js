@@ -21,6 +21,10 @@ exports.handleDatabaseErrors = (err, request, response, next) => {
     response.status(404).send({
       msg: "Nothing found with this identifier.",
     });
+  } else if (err.code === "23505") {
+    response.status(400).send({
+      msg: "Bad Request: Check in input values",
+    });
   } else {
     next(err);
   }
