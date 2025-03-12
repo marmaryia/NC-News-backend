@@ -397,6 +397,55 @@ describe("DELETE /api/comments/:comment_id", () => {
   });
 });
 
+describe("PATCH /api/comments/:comment_id", () => {
+  test("200: Responds with an object representing the updated comment", () => {
+    return request(app)
+      .patch("/api/comments/2")
+      .send({ inc_votes: 5 })
+      .expect(200)
+      .then(({ body: { comment } }) => {
+        expect(comment.votes).toBe(19);
+        expect(comment.comment_id).toBe(2);
+      });
+  });
+  test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
+    return request(app)
+      .patch("/api/comments/notAnId")
+      .send({ inc_votes: 5 })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: invalid input");
+      });
+  });
+  test("404: Responds with 'Not Found' if no comment with the provided ID exists in the database", () => {
+    return request(app)
+      .patch("/api/comments/1000")
+      .send({ inc_votes: 5 })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Nothing found with this value");
+      });
+  });
+  test("400: Responds with 'Bad Request' if incomplete data provided", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: incomplete data provided");
+      });
+  });
+  test("400: Responds with 'Bad Request' if the data provided is not valid", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: "notANumber" })
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad request: invalid input");
+      });
+  });
+});
+
 describe("GET /api/users", () => {
   test("200: Responds with an array containing all users", () => {
     return request(app)
@@ -413,6 +462,9 @@ describe("GET /api/users", () => {
         });
       });
   });
+});
+
+describe("GET /api/users/:username", () => {
   test("200: Responds with the user with the requested username", () => {
     return request(app)
       .get("/api/users/lurker")
