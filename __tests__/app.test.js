@@ -413,6 +413,26 @@ describe("GET /api/users", () => {
         });
       });
   });
+  test("200: Responds with the user with the requested username", () => {
+    return request(app)
+      .get("/api/users/lurker")
+      .expect(200)
+      .then(({ body: { user } }) => {
+        expect(user).toMatchObject({
+          username: "lurker",
+          name: expect.any(String),
+          avatar_url: expect.any(String),
+        });
+      });
+  });
+  test("404: Responds with 'Not Found' if a user with the requested username does not exist in the database", () => {
+    return request(app)
+      .get("/api/users/notauser")
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("The item requested does not exist in the database");
+      });
+  });
 });
 
 describe("GET /aqi", () => {
