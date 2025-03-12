@@ -34,7 +34,7 @@
   },
   "POST /api/articles": {
     "description": "accepts an object with the properties of 'author' (foreign key), 'title', 'body', 'topic (foreign key)' and (optional) 'article_img_url', and serves an objects that represents the added article",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": [],
     "exampleResponse": {
       "article": {
         "article_id": 19,
