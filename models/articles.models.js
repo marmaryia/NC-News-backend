@@ -74,6 +74,12 @@ exports.updateArticleById = (article_id, inc_votes) => {
 };
 
 exports.addArticle = (author, title, body, topic, article_img_url) => {
+  if (!author || !title || !body || !topic) {
+    return Promise.reject({
+      status: 400,
+      msg: "Bad Request: Incomplete data provided",
+    });
+  }
   const sqlString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
 
   return db

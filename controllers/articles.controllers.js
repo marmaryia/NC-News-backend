@@ -42,7 +42,11 @@ exports.patchArticleById = (request, response, next) => {
 
 exports.postArticle = (request, response, next) => {
   const { author, title, body, topic, article_img_url } = request.body;
-  addArticle(author, title, body, topic, article_img_url).then((article) => {
-    response.status(201).send({ article });
-  });
+  addArticle(author, title, body, topic, article_img_url)
+    .then((article) => {
+      response.status(201).send({ article });
+    })
+    .catch((err) => {
+      next(err);
+    });
 };

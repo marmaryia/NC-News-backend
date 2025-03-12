@@ -168,6 +168,30 @@ describe("POST /api/articles", () => {
         expect(article.article_img_url).toBe(null);
       });
   });
+  test("400: Responds with 'Bad Request' if the request body incomplete", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({})
+      .expect(400)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Bad Request: Incomplete data provided");
+      });
+  });
+  test("404: Responds with 'Not Found' if a foreign key in the article body does not exist in the database", () => {
+    return request(app)
+      .post("/api/articles")
+      .send({
+        author: "unknown author",
+        title: "New Article",
+        body: "New article text",
+        topic: "cats",
+        article_img_url: "some_url",
+      })
+      .expect(404)
+      .then(({ body: { msg } }) => {
+        expect(msg).toBe("Nothing found with this identifier.");
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id", () => {
