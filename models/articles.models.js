@@ -27,7 +27,6 @@ exports.fetchAllArticles = (sort_by, order, topic, limit, p, otherQueries) => {
   const offsetValue = limit * ((p || 1) - 1);
 
   if (topic) {
-    promises.push(checkExists("topics", "slug", topic));
     queryValues.push(topic);
     sqlQuery += ` WHERE topic = $1`;
     sqlQueryForTotal += ` WHERE topic = $1`;
@@ -89,12 +88,6 @@ exports.updateArticleById = (article_id, inc_votes) => {
 };
 
 exports.addArticle = (author, title, body, topic, article_img_url) => {
-  if (!author || !title || !body || !topic) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad Request: Incomplete data provided",
-    });
-  }
   const sqlString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
 
   return db
