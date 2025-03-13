@@ -2,7 +2,9 @@
 
 Hosted version: https://be-nc-news-jql4.onrender.com/api
 
-This project mimics the backend service of a news website.
+This project mimics the backend service of a news website / discussion board.\
+Its endpoints allow access to a PSQL database storing articles, comments, topics and users.\
+The project was built using the TDD approach, with tests for utility functions, the seed function and CRUD endpoints.
 
 These dependencies need to be installed to run the code locally (npm install):
 
@@ -11,8 +13,8 @@ These dependencies need to be installed to run the code locally (npm install):
 
 Two files need to be created locally:
 
-- .env.test, setting PGDATABASE value to nc_news_test (for connection to the test database when running the code in the test environment);
-- .env.development, setting PGDATABASE value to nc_news (for connection to the development database when running the code in the development environment).
+- .env.test, setting PGDATABASE value to nc_news_test (for connection to the test database in the test environment);
+- .env.development, setting PGDATABASE value to nc_news (for connection to the development database in the development environment).
 
 To seed the local databases, npm run:
 
