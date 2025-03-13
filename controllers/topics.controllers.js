@@ -7,8 +7,8 @@ exports.getAllTopics = (request, response) => {
 };
 
 exports.postTopic = (request, response, next) => {
-  const { slug, description } = request.body;
-  addTopic(slug, description)
+  const { slug, description, img_url } = request.body;
+  addTopic(slug, description, img_url)
     .then((topic) => {
       response.status(201).send({ topic });
     })
