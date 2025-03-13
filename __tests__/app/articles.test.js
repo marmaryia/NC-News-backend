@@ -328,6 +328,20 @@ describe("PATCH /api/articles/:article_id", () => {
         });
       });
   });
+  test("200: Does not change other articles apart from the requested one", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -1 })
+      .expect(200)
+      .then(() => {
+        return db.query(`SELECT votes FROM articles WHERE article_id <> 1`);
+      })
+      .then(({ rows }) => {
+        rows.forEach((row) => {
+          expect(row.votes).toBe(0);
+        });
+      });
+  });
   test("404: Responds with 'Not Found' if an article with the requested ID does not exist in the database", () => {
     return request(app)
       .patch("/api/articles/500")

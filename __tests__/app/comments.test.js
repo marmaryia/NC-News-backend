@@ -203,6 +203,20 @@ describe("PATCH /api/comments/:comment_id", () => {
         expect(comment.comment_id).toBe(2);
       });
   });
+  test("200: Does not change other comments apart from the requested one", () => {
+    return request(app)
+      .patch("/api/comments/1")
+      .send({ inc_votes: 1000 })
+      .expect(200)
+      .then(() => {
+        return db.query(`SELECT votes FROM comments WHERE comment_id <> 1`);
+      })
+      .then(({ rows }) => {
+        rows.forEach((row) => {
+          expect(row.votes).toBeLessThan(101);
+        });
+      });
+  });
   test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
     return request(app)
       .patch("/api/comments/notAnId")
