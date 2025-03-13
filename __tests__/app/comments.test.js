@@ -158,7 +158,21 @@ describe("POST /api/articles/:article_id/comments", () => {
 
 describe("DELETE /api/comments/:comment_id", () => {
   test("204: No content", () => {
-    return request(app).delete("/api/comments/3").expect(204);
+    return request(app)
+      .delete("/api/comments/3")
+      .expect(204)
+      .then(() => {
+        return db.query(`SELECT * FROM comments`);
+      })
+      .then(({ rows }) => {
+        expect(rows.length).toBe(17);
+      })
+      .then(() => {
+        return db.query(`SELECT * FROM comments WHERE comment_id = 3`);
+      })
+      .then(({ rows }) => {
+        expect(rows.length).toBe(0);
+      });
   });
   test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
     return request(app)

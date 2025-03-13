@@ -352,7 +352,21 @@ describe("PATCH /api/articles/:article_id", () => {
 
 describe("DELETE /api/articles/:article_id", () => {
   test("204: No content", () => {
-    return request(app).delete("/api/articles/3").expect(204);
+    return request(app)
+      .delete("/api/articles/3")
+      .expect(204)
+      .then(() => {
+        return db.query(`SELECT * FROM articles`);
+      })
+      .then(({ rows }) => {
+        expect(rows.length).toBe(12);
+      })
+      .then(() => {
+        return db.query(`SELECT * FROM articles WHERE article_id = 3`);
+      })
+      .then(({ rows }) => {
+        expect(rows.length).toBe(0);
+      });
   });
   test("404: Responds with 'Not Found' if an article with the request ID does not exist in the database", () => {
     return request(app)
