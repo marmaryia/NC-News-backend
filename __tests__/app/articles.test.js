@@ -228,7 +228,7 @@ describe("POST /api/articles", () => {
       .send({})
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Incomplete data provided");
+        expect(msg).toBe("Incomplete data provided: missing author");
       });
   });
   test("404: Responds with 'Not Found' if a foreign key in the article body does not exist in the database", () => {
@@ -366,7 +366,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({})
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Incomplete data provided");
+        expect(msg).toBe("Incomplete data provided: missing inc_votes");
       });
   });
   test("400: Responds with 'Bad Request' if the data provided is not valid", () => {

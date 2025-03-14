@@ -27,6 +27,7 @@ exports.fetchAllArticles = (sort_by, order, topic, limit, p, otherQueries) => {
   const offsetValue = limit * ((p || 1) - 1);
 
   if (topic) {
+    promises.push(checkExists("topics", "slug", topic));
     queryValues.push(topic);
     sqlQuery += ` WHERE topic = $1`;
     sqlQueryForTotal += ` WHERE topic = $1`;

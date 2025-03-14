@@ -9,7 +9,6 @@ const {
 
 exports.getAllArticles = (request, response, next) => {
   const { errors } = validationResult(request);
-
   if (errors.length !== 0) {
     return next(errors[0].msg);
   }

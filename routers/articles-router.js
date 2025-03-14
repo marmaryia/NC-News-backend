@@ -11,7 +11,7 @@ const {
   articlePatchingValidator,
   articlePostingValidator,
   articleQueriesValidator,
-} = require("../validators");
+} = require("../validators/articles.validators");
 
 const articlesRouter = require("express").Router();
 
