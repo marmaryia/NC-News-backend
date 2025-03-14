@@ -15,13 +15,12 @@ exports.addTopic = (slug, description, img_url) => {
       }
     })
     .then(() => {
-      return db
-        .query(
-          `INSERT INTO topics (slug, description, img_url) VALUES ($1, $2, $3) RETURNING *`,
-          [slug, description, img_url]
-        )
-        .then(({ rows }) => {
-          return rows[0];
-        });
+      return db.query(
+        `INSERT INTO topics (slug, description, img_url) VALUES ($1, $2, $3) RETURNING *`,
+        [slug, description, img_url]
+      );
+    })
+    .then(({ rows }) => {
+      return rows[0];
     });
 };
