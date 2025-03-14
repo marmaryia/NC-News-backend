@@ -1,6 +1,4 @@
 const { param, body, query } = require("express-validator");
-const db = require("../db/connection");
-const { checkExists } = require("../app.utils");
 const { getErrorMessageForMissingData } = require("./validators.utils");
 
 const invalidValue = { status: 400, msg: "Invalid value" };
