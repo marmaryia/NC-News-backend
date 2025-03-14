@@ -44,7 +44,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/500/comments")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("The item requested does not exist in the database");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
   test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {
@@ -52,7 +52,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/notAnId/comments")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
   describe("?limit={number of responses}", () => {
@@ -69,7 +69,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         .get("/api/articles/1/comments?limit=five")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Bad request: invalid input");
+          expect(msg).toBe("Invalid value");
         });
     });
   });
@@ -95,7 +95,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         .get("/api/articles/1/comments?p=one")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Bad request: invalid input");
+          expect(msg).toBe("Invalid value");
         });
     });
   });
@@ -124,7 +124,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "lurker", body: "Fantastic!" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
   test("404: Responds with 'Not Found' if the article with the provided ID does not exist in the database", () => {
@@ -133,7 +133,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: "lurker", body: "Fantastic!" })
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Nothing found with this identifier.");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
   test("400: Responds with 'Bad Request' if the comment body to add to the article is incomplete", () => {
@@ -142,7 +142,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ body: "Fantastic!" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad Request: Incomplete data provided");
+        expect(msg).toBe("Incomplete data provided: missing username");
       });
   });
   test("404: Responds with 'Not Found' if the foreign key in the comment body does not exist in the database", () => {
@@ -151,7 +151,7 @@ describe("POST /api/articles/:article_id/comments", () => {
       .send({ username: 5, body: "Fantastic!" })
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Nothing found with this identifier.");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
 });
@@ -179,7 +179,7 @@ describe("DELETE /api/comments/:comment_id", () => {
       .delete("/api/comments/notAnId")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
   test("404: Responds with 'Not Found' if no comment with the provided ID exists in the database", () => {
@@ -223,7 +223,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send({ inc_votes: 5 })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
   test("404: Responds with 'Not Found' if no comment with the provided ID exists in the database", () => {
@@ -241,7 +241,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send({})
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: incomplete data provided");
+        expect(msg).toBe("Incomplete data provided: missing inc_votes");
       });
   });
   test("400: Responds with 'Bad Request' if the data provided is not valid", () => {
@@ -250,7 +250,7 @@ describe("PATCH /api/comments/:comment_id", () => {
       .send({ inc_votes: "notANumber" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
 });

@@ -57,7 +57,7 @@ describe("POST /api/topics", () => {
       .send({ description: "all about the weather" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad Request: Incomplete data provided");
+        expect(msg).toBe("Incomplete data provided: missing slug");
       });
   });
   test("400: Responds with 'Bad Request' if a topic with the same slug already exists", () => {
@@ -66,7 +66,7 @@ describe("POST /api/topics", () => {
       .send({ slug: "cats", description: "all about the weather" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad Request: Check in input values");
+        expect(msg).toBe("Invalid input");
       });
   });
   test("400: Responds with 'Bad Request' if the data provided violates database constraints", () => {
@@ -80,7 +80,7 @@ describe("POST /api/topics", () => {
       })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid input");
       });
   });
 });

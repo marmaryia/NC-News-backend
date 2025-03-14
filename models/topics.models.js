@@ -7,18 +7,19 @@ exports.fetchAllTopics = () => {
 };
 
 exports.addTopic = (slug, description, img_url) => {
-  if (!slug || !description) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad Request: Incomplete data provided",
-    });
-  }
-
   return db
-    .query(
-      `INSERT INTO topics (slug, description, img_url) VALUES ($1, $2, $3) RETURNING *`,
-      [slug, description, img_url]
-    )
+    .query(`SELECT * FROM topics WHERE slug = $1`, [slug])
+    .then(({ rows }) => {
+      if (rows.length !== 0) {
+        return Promise.reject({ status: 400, msg: "Invalid input" });
+      }
+    })
+    .then(() => {
+      return db.query(
+        `INSERT INTO topics (slug, description, img_url) VALUES ($1, $2, $3) RETURNING *`,
+        [slug, description, img_url]
+      );
+    })
     .then(({ rows }) => {
       return rows[0];
     });

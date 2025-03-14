@@ -1,3 +1,4 @@
+const { validationResult } = require("express-validator");
 const {
   fetchCommentsByArticleId,
   addCommentByArticleId,
@@ -6,9 +7,13 @@ const {
 } = require("../models/comments.models");
 
 exports.getCommentsByArticleId = (request, response, next) => {
+  const { errors } = validationResult(request);
+  if (errors.length !== 0) {
+    return next(errors[0].msg);
+  }
+
   const { article_id } = request.params;
   const { limit, p } = request.query;
-
   fetchCommentsByArticleId(article_id, limit, p)
     .then((comments) => {
       response.status(200).send({ comments });
@@ -19,6 +24,11 @@ exports.getCommentsByArticleId = (request, response, next) => {
 };
 
 exports.postCommentByArticleId = (request, response, next) => {
+  const { errors } = validationResult(request);
+  if (errors.length !== 0) {
+    return next(errors[0].msg);
+  }
+
   const { article_id } = request.params;
   const { username, body } = request.body;
   addCommentByArticleId(article_id, username, body)
@@ -31,6 +41,11 @@ exports.postCommentByArticleId = (request, response, next) => {
 };
 
 exports.deleteCommentById = (request, response, next) => {
+  const { errors } = validationResult(request);
+  if (errors.length !== 0) {
+    return next(errors[0].msg);
+  }
+
   const { comment_id } = request.params;
   removeCommentById(comment_id)
     .then(() => {
@@ -42,6 +57,11 @@ exports.deleteCommentById = (request, response, next) => {
 };
 
 exports.patchCommentById = (request, response, next) => {
+  const { errors } = validationResult(request);
+  if (errors.length !== 0) {
+    return next(errors[0].msg);
+  }
+
   const { comment_id } = request.params;
   const { inc_votes } = request.body;
   updateCommentById(comment_id, inc_votes)

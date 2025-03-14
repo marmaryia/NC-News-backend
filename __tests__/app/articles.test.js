@@ -73,7 +73,7 @@ describe("GET /api/articles", () => {
         .get("/api/articles?sort_by=not_a_column")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Bad request: invalid input");
+          expect(msg).toBe("Invalid input");
         });
     });
   });
@@ -91,7 +91,7 @@ describe("GET /api/articles", () => {
         .get("/api/articles?order=not_valid_order")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Bad request: invalid input");
+          expect(msg).toBe("Invalid value");
         });
     });
   });
@@ -140,7 +140,7 @@ describe("GET /api/articles", () => {
         .get("/api/articles?limit=five")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Bad request: invalid input");
+          expect(msg).toBe("Invalid value");
         });
     });
   });
@@ -166,7 +166,7 @@ describe("GET /api/articles", () => {
         .get("/api/articles?p=one")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).toBe("Bad request: invalid input");
+          expect(msg).toBe("Invalid value");
         });
     });
   });
@@ -228,7 +228,7 @@ describe("POST /api/articles", () => {
       .send({})
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad Request: Incomplete data provided");
+        expect(msg).toBe("Incomplete data provided: missing author");
       });
   });
   test("404: Responds with 'Not Found' if a foreign key in the article body does not exist in the database", () => {
@@ -243,7 +243,7 @@ describe("POST /api/articles", () => {
       })
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Nothing found with this identifier.");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
   test("400: Responds with 'Bad Request' if the data provided violates database constraints", () => {
@@ -259,7 +259,7 @@ describe("POST /api/articles", () => {
       })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid input");
       });
   });
 });
@@ -304,7 +304,7 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/notAnId")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
 });
@@ -357,7 +357,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: 5 })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
   test("400: Responds with 'Bad Request' if incomplete data provided", () => {
@@ -366,7 +366,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({})
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: incomplete data provided");
+        expect(msg).toBe("Incomplete data provided: missing inc_votes");
       });
   });
   test("400: Responds with 'Bad Request' if the data provided is not valid", () => {
@@ -375,7 +375,7 @@ describe("PATCH /api/articles/:article_id", () => {
       .send({ inc_votes: "notANumber" })
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
 });
@@ -411,7 +411,7 @@ describe("DELETE /api/articles/:article_id", () => {
       .delete("/api/articles/one")
       .expect(400)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Bad request: invalid input");
+        expect(msg).toBe("Invalid value");
       });
   });
   test("204: Deletes the article's comments as well", () => {
