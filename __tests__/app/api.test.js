@@ -1,4 +1,4 @@
-const { app, request, seed, data, db, endpointsJson } = require("./index");
+const { app, request, seed, data, db, endpointsJson } = require("./test-setup");
 
 beforeEach(() => seed(data));
 
