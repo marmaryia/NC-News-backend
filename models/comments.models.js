@@ -2,6 +2,7 @@ const format = require("pg-format");
 const { checkExists } = require("../app.utils");
 const db = require("../db/connection");
 const { fetchArticleById } = require("./articles.models");
+const { check } = require("express-validator");
 
 exports.fetchCommentsByArticleId = (article_id, limit, p) => {
   limit = limit || 10;
@@ -18,18 +19,16 @@ exports.fetchCommentsByArticleId = (article_id, limit, p) => {
 };
 
 exports.addCommentByArticleId = (article_id, username, body) => {
-  if (!username || !body) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad Request: Incomplete data provided",
-    });
-  }
-
-  return db
-    .query(
-      `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`,
-      [article_id, username, body]
-    )
+  return Promise.all([
+    checkExists("articles", "article_id", article_id),
+    checkExists("users", "username", username),
+  ])
+    .then(() => {
+      return db.query(
+        `INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING *`,
+        [article_id, username, body]
+      );
+    })
     .then(({ rows }) => {
       return rows[0];
     });
@@ -42,13 +41,6 @@ exports.removeCommentById = (comment_id) => {
 };
 
 exports.updateCommentById = (comment_id, inc_votes) => {
-  if (!inc_votes) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad request: incomplete data provided",
-    });
-  }
-
   const sqlString = `UPDATE comments SET votes = votes + $1 WHERE comment_id = $2 RETURNING *`;
   const promises = [
     db.query(sqlString, [inc_votes, comment_id]),
