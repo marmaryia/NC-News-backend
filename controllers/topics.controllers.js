@@ -12,6 +12,7 @@ exports.postTopic = (request, response, next) => {
   if (errors.length !== 0) {
     return next(errors[0].msg);
   }
+
   const { slug, description, img_url } = request.body;
   addTopic(slug, description, img_url)
     .then((topic) => {

@@ -25,7 +25,6 @@ exports.getAllArticles = (request, response, next) => {
 
 exports.getArticleById = (request, response, next) => {
   const { errors } = validationResult(request);
-
   if (errors.length !== 0) {
     return next(errors[0].msg);
   }
@@ -80,7 +79,6 @@ exports.deleteArticleById = (request, response, next) => {
   }
 
   const { article_id } = request.params;
-
   removeArticleById(article_id)
     .then(() => {
       response.status(204).end();

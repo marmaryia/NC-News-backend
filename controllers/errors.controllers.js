@@ -15,21 +15,8 @@ exports.handleCustomErrors = (err, request, response, next) => {
 };
 
 exports.handleDatabaseErrors = (err, request, response, next) => {
-  if (
-    err.code === "22P02" ||
-    err.code === "42703" ||
-    err.code === "42601" ||
-    err.code === "22001"
-  ) {
-    response.status(400).send({ msg: "Bad request: invalid input" });
-  } else if (err.code === "23503") {
-    response.status(404).send({
-      msg: "Nothing found with this identifier.",
-    });
-  } else if (err.code === "23505") {
-    response.status(400).send({
-      msg: "Bad Request: Check in input values",
-    });
+  if (err.code) {
+    response.status(400).send({ msg: "Something's wrong" });
   } else {
     next(err);
   }

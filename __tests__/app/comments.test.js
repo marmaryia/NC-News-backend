@@ -44,7 +44,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/500/comments")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("The item requested does not exist in the database");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
   test("400: Responds with 'Bad Request' if the provided ID is not valid", () => {

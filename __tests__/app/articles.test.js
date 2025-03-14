@@ -243,7 +243,7 @@ describe("POST /api/articles", () => {
       })
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).toBe("Nothing found with this identifier.");
+        expect(msg).toBe("Nothing found with this value");
       });
   });
   test("400: Responds with 'Bad Request' if the data provided violates database constraints", () => {

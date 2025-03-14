@@ -72,27 +72,25 @@ exports.fetchArticleById = (article_id) => {
 };
 
 exports.updateArticleById = (article_id, inc_votes) => {
-  if (!inc_votes) {
-    return Promise.reject({
-      status: 400,
-      msg: "Bad request: incomplete data provided",
+  return checkExists("articles", "article_id", article_id)
+    .then(() => {
+      const sqlString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
+      return db.query(sqlString, [inc_votes, article_id]);
+    })
+    .then(({ rows }) => {
+      return rows[0];
     });
-  }
-  const sqlString = `UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *`;
-  const promises = [
-    db.query(sqlString, [inc_votes, article_id]),
-    checkExists("articles", "article_id", article_id),
-  ];
-  return Promise.all(promises).then(([{ rows }]) => {
-    return rows[0];
-  });
 };
 
 exports.addArticle = (author, title, body, topic, article_img_url) => {
-  const sqlString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
-
-  return db
-    .query(sqlString, [author, title, body, topic, article_img_url])
+  return Promise.all([
+    checkExists("users", "username", author),
+    checkExists("topics", "slug", topic),
+  ])
+    .then(() => {
+      const sqlString = `INSERT INTO articles (author, title, body, topic, article_img_url) VALUES ($1, $2, $3, $4, $5) RETURNING *`;
+      return db.query(sqlString, [author, title, body, topic, article_img_url]);
+    })
     .then(({ rows }) => {
       rows[0].comment_count = 0;
       return rows[0];
