@@ -23,7 +23,7 @@ exports.articlePostingValidator = [
 exports.articleQueriesValidator = [
   query("limit", invalidValue).optional().isNumeric(),
   query("p", invalidValue).optional().isNumeric(),
-  query("order", invalidValue).optional().toLowerCase().isIn("asc", "desc"),
+  query("order", invalidValue).optional().toLowerCase().isIn(["asc", "desc"]),
   query("sort_by", { status: 400, msg: "Invalid input" })
     .optional()
     .toLowerCase()
