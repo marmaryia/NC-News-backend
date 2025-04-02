@@ -36,5 +36,6 @@ exports.articleQueriesValidator = [
       "created_at",
       "votes",
       "article_img_url",
+      "comment_count",
     ]),
 ];
